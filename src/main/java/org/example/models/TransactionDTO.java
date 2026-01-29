@@ -4,9 +4,8 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 
 import java.time.LocalDateTime;
 
-@JsonRootName(value = "transaction")
-public record Transaction(
+public record TransactionDTO(
         String merchant,
-        String amount,
-        LocalDateTime time) {
+        long amount,
+        String time) {
 }
