@@ -1,7 +1,8 @@
 package org.example.domain;
 
-import org.example.models.AccountDTO;
-import org.example.models.ResponseDTO;
+import org.example.mapper.AccountMapper;
+import org.example.model.AccountDTO;
+import org.example.model.ResponseDTO;
 import org.example.util.Constants;
 
 import java.time.Instant;
@@ -38,8 +39,7 @@ public class Account {
     }
 
     public synchronized ResponseDTO processTransaction(Transaction transactionToProcess) {
-        Instant timeBefore = Instant.now().minusSeconds(Constants.LIMIT_TIME_SECONDS);
-        this.cleanTransactions(timeBefore);
+        this.cleanTransactions(transactionToProcess.getTime());
         List<String> violations = validate(transactionToProcess);
         if (violations.isEmpty()) {
             transactions.add(transactionToProcess);
@@ -56,19 +56,17 @@ public class Account {
         if (availableLimit < transactionToProcess.getAmount()) {
             violations.add(Constants.INSUFFICIENT_BALANCE_MESSAGE);
         }
-        if (violations.isEmpty()) {
-            if (numberTransactionInLimitTime()) {
-                violations.add(Constants.TRANSACTION_LIMIT_IN_TIME_MESSAGE);
-            }
-            if (repeatedTransactionInLimitTime(transactionToProcess)) {
-                violations.add(Constants.TRANSACTION_REPEATED);
-            }
+        if (numberTransactionInLimitTime()) {
+            violations.add(Constants.TRANSACTION_LIMIT_IN_TIME_MESSAGE);
+        }
+        if (repeatedTransactionInLimitTime(transactionToProcess)) {
+            violations.add(Constants.TRANSACTION_REPEATED);
         }
         return violations;
     }
 
     private boolean numberTransactionInLimitTime() {
-        return transactions.size() > Constants.LIMIT_TRANSACTION_IN_TIME;
+        return transactions.size() >= Constants.LIMIT_TRANSACTION_IN_TIME;
     }
 
     private boolean repeatedTransactionInLimitTime(Transaction transactionToProcess) {
@@ -77,8 +75,9 @@ public class Account {
                         transaction.getMerchant().equals(transactionToProcess.getMerchant()));
     }
 
-    private void cleanTransactions(Instant timeBefore) {
-        while (!transactions.isEmpty() && transactions.peekFirst().getTime().isBefore(timeBefore)) {
+    private void cleanTransactions(Instant referenceTime) {
+        Instant limitTime = referenceTime.minusSeconds(Constants.LIMIT_TRANSACTION_IN_TIME);
+        while (!transactions.isEmpty() && transactions.peekFirst().getTime().isBefore(limitTime)) {
             transactions.pollFirst();
         }
     }
