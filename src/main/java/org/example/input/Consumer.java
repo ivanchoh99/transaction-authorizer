@@ -7,9 +7,7 @@ import org.example.mapper.MapperWrapper;
 import org.example.model.RegisterResult;
 import org.example.service.AccountService;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 
 public class Consumer {
@@ -21,7 +19,7 @@ public class Consumer {
     }
 
     public void consume() throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream("operations.txt"), StandardCharsets.UTF_8));
         String line;
         while ((line = reader.readLine()) != null) {
             if (line.trim().isBlank()) {
