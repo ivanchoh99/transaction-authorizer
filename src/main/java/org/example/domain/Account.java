@@ -22,10 +22,6 @@ public record Account(
         return availableLimit;
     }
 
-    public Account {
-        transactions = new ArrayDeque<>();
-    }
-
     public RegisterResult processTransaction(Transaction transactionToProcess) {
         Deque<Transaction> filterHistory = this.cleanTransactions(transactionToProcess.time());
         List<String> violations = validate(transactionToProcess, filterHistory);

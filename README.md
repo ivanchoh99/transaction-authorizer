@@ -15,8 +15,6 @@ A diferencia de los modelos mutables tradicionales, la entidad Account se implem
 2. Gestión de Estado Lock-Free (AtomicReference)
 
 Para manejar un entorno de alto rendimiento sin los cuellos de botella del bloqueo tradicional (synchronized), se implementó un CAS Loop (Compare-And-Swap).
-P(contencioˊn) baja⟹Rendimiento superior a Mutex
-
     Estrategia: El sistema lee el estado, calcula la transición de forma aislada y solo actualiza la referencia global si el estado base no ha sido modificado por otro hilo. Esto permite un paralelismo real a nivel de hardware.
 
 3. Ventana Deslizante (Sliding Window)
