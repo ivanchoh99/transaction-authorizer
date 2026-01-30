@@ -32,9 +32,9 @@ public class Account {
         this.availableLimit = availableLimit;
     }
 
-    public Account(AccountDTO accountDTO) {
-        activeCard = accountDTO.activeCard();
-        availableLimit = accountDTO.availableLimit();
+    public Account(boolean activeCard, long availableLimit) {
+        this.activeCard = activeCard;
+        this.availableLimit = availableLimit;
     }
 
     public synchronized ResponseDTO processTransaction(Transaction transactionToProcess) {
@@ -45,7 +45,7 @@ public class Account {
             transactions.add(transactionToProcess);
             availableLimit -= transactionToProcess.getAmount();
         }
-        return new ResponseDTO(activeCard, availableLimit, violations);
+        return new ResponseDTO(AccountMapper.toAccountDTO(this), violations);
     }
 
     private List<String> validate(Transaction transactionToProcess) {
