@@ -40,7 +40,7 @@ public class Account {
     public synchronized ResponseDTO processTransaction(Transaction transactionToProcess) {
         Instant timeBefore = Instant.now().minusSeconds(Constants.LIMIT_TIME_SECONDS);
         this.cleanTransactions(timeBefore);
-        List<String> violations = validate(transactionToProcess, timeBefore);
+        List<String> violations = validate(transactionToProcess);
         if (violations.isEmpty()) {
             transactions.add(transactionToProcess);
             availableLimit -= transactionToProcess.getAmount();
@@ -48,7 +48,7 @@ public class Account {
         return new ResponseDTO(activeCard, availableLimit, violations);
     }
 
-    private List<String> validate(Transaction transactionToProcess, Instant timeBefore) {
+    private List<String> validate(Transaction transactionToProcess) {
         List<String> violations = new ArrayList<>();
         if (!activeCard) {
             violations.add(Constants.CARD_NO_ACTIVE_MESSAGE);
@@ -57,21 +57,21 @@ public class Account {
             violations.add(Constants.INSUFFICIENT_BALANCE_MESSAGE);
         }
         if (violations.isEmpty()) {
-            if (numberTransactionInLimitTime(timeBefore)) {
+            if (numberTransactionInLimitTime()) {
                 violations.add(Constants.TRANSACTION_LIMIT_IN_TIME_MESSAGE);
             }
-            if (repeatedTransactionInLimitTime(transactionToProcess, timeBefore)) {
+            if (repeatedTransactionInLimitTime(transactionToProcess)) {
                 violations.add(Constants.TRANSACTION_REPEATED);
             }
         }
         return violations;
     }
 
-    private boolean numberTransactionInLimitTime(Instant timeBefore) {
+    private boolean numberTransactionInLimitTime() {
         return transactions.size() > Constants.LIMIT_TRANSACTION_IN_TIME;
     }
 
-    private boolean repeatedTransactionInLimitTime(Transaction transactionToProcess, Instant timeBefore) {
+    private boolean repeatedTransactionInLimitTime(Transaction transactionToProcess) {
         return transactions.stream().anyMatch(transaction ->
                 transaction.getAmount() == transactionToProcess.getAmount() &&
                         transaction.getMerchant().equals(transactionToProcess.getMerchant()));
