@@ -1,8 +1,6 @@
 package org.example.mapper;
 
-import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.PropertyNamingStrategies;
-import tools.jackson.databind.SerializationFeature;
 import tools.jackson.databind.json.JsonMapper;
 
 public class JacksonMapper {

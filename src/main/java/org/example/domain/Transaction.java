@@ -5,9 +5,9 @@ import org.example.model.TransactionDTO;
 import java.time.Instant;
 
 public class Transaction {
-    private String merchant;
-    private long amount;
-    private Instant time;
+    private final String merchant;
+    private final long amount;
+    private final Instant time;
 
     public Transaction(TransactionDTO transactionDTO) {
         merchant = transactionDTO.merchant();

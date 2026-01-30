@@ -1,7 +1,6 @@
 package org.example.domain;
 
 import org.example.mapper.AccountMapper;
-import org.example.model.AccountDTO;
 import org.example.model.ResponseDTO;
 import org.example.util.Constants;
 
@@ -21,16 +20,8 @@ public class Account {
         return activeCard;
     }
 
-    public void setActiveCard(boolean activeCard) {
-        this.activeCard = activeCard;
-    }
-
     public long getAvailableLimit() {
         return availableLimit;
-    }
-
-    public void setAvailableLimit(long availableLimit) {
-        this.availableLimit = availableLimit;
     }
 
     public Account(boolean activeCard, long availableLimit) {
