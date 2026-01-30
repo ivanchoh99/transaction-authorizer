@@ -7,3 +7,4 @@
 {"transaction": {"merchant": "Pizza Hut", "amount": 10, "time": "2026-01-29T10:01:30.000Z"}}
 {"transaction": {"merchant": "Subway", "amount": 10, "time": "2026-01-29T10:01:45.000Z"}}
 {"transaction": {"merchant": "Starbucks", "amount": 5, "time": "2026-01-29T10:10:00.000Z"}}
+{"transaction": {"merchant": "Starbucks", "amount": 5, "time": "2026-01-29T10:10:00.000Z"}}
