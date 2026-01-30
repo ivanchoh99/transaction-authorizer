@@ -3,7 +3,7 @@ package org.example.input;
 
 import org.example.mapper.JacksonMapper;
 import org.example.mapper.MapperWrapper;
-import org.example.models.ResponseDTO;
+import org.example.model.ResponseDTO;
 import org.example.service.AccountService;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -29,13 +29,13 @@ public class Consumer {
             }
             JsonMapper mapper = JacksonMapper.get();
             MapperWrapper operation = mapper.readValue(line, MapperWrapper.class);
-            if(operation.getAccount() != null) {
+            if (operation.getAccount() != null) {
                 ResponseDTO response = service.initAccount(operation.getAccount());
-                System.out.println(response);
+                System.out.println(mapper.writeValueAsString(response));
             }
-            if(operation.getTransaction() != null) {
+            if (operation.getTransaction() != null) {
                 ResponseDTO response = service.processTransaction(operation.getTransaction());
-                System.out.println(response);
+                System.out.println(mapper.writeValueAsString(response));
             }
         }
     }
