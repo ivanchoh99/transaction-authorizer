@@ -1,7 +1,6 @@
 package org.example.domain;
 
-import org.example.mapper.AccountMapper;
-import org.example.model.ResponseDTO;
+import org.example.model.RegisterResult;
 import org.example.util.Constants;
 
 import java.time.Instant;
@@ -10,11 +9,10 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
-public class Account {
-
-    private final boolean activeCard;
-    private long availableLimit;
-    private final Deque<Transaction> transactions = new ArrayDeque<>();
+public record Account(
+        boolean activeCard,
+        long availableLimit,
+        Deque<Transaction> transactions) {
 
     public boolean isActiveCard() {
         return activeCard;
@@ -24,52 +22,57 @@ public class Account {
         return availableLimit;
     }
 
-    public Account(boolean activeCard, long availableLimit) {
-        this.activeCard = activeCard;
-        this.availableLimit = availableLimit;
+    public Account {
+        transactions = new ArrayDeque<>();
     }
 
-    public synchronized ResponseDTO processTransaction(Transaction transactionToProcess) {
-        this.cleanTransactions(transactionToProcess.getTime());
-        List<String> violations = validate(transactionToProcess);
-        if (violations.isEmpty()) {
-            transactions.add(transactionToProcess);
-            availableLimit -= transactionToProcess.getAmount();
+    public RegisterResult processTransaction(Transaction transactionToProcess) {
+        Deque<Transaction> filterHistory = this.cleanTransactions(transactionToProcess.time());
+        List<String> violations = validate(transactionToProcess, filterHistory);
+
+        if (!violations.isEmpty()) {
+            return new RegisterResult(this, violations);
         }
-        return new ResponseDTO(AccountMapper.toAccountDTO(this), violations);
+        long newAmount = this.availableLimit - transactionToProcess.amount();
+        filterHistory.addLast(transactionToProcess);
+        Account nextState = new Account(this.isActiveCard(), newAmount, filterHistory);
+        return new RegisterResult(nextState, List.of());
     }
 
-    private List<String> validate(Transaction transactionToProcess) {
+    private List<String> validate(Transaction transactionToProcess, Deque<Transaction> filterHistory) {
         List<String> violations = new ArrayList<>();
         if (!activeCard) {
             violations.add(Constants.CARD_NO_ACTIVE_MESSAGE);
         }
-        if (availableLimit < transactionToProcess.getAmount()) {
+        if (availableLimit < transactionToProcess.amount()) {
             violations.add(Constants.INSUFFICIENT_BALANCE_MESSAGE);
         }
-        if (numberTransactionInLimitTime()) {
+        if (numberTransactionInLimitTime(filterHistory)) {
             violations.add(Constants.TRANSACTION_LIMIT_IN_TIME_MESSAGE);
         }
-        if (repeatedTransactionInLimitTime(transactionToProcess)) {
+        if (repeatedTransactionInLimitTime(transactionToProcess, filterHistory)) {
             violations.add(Constants.TRANSACTION_REPEATED);
         }
         return violations;
     }
 
-    private boolean numberTransactionInLimitTime() {
-        return transactions.size() >= Constants.LIMIT_TRANSACTION_IN_TIME;
+    private boolean numberTransactionInLimitTime(Deque<Transaction> filterHistory) {
+        return filterHistory.size() >= Constants.LIMIT_TRANSACTION_IN_TIME;
     }
 
-    private boolean repeatedTransactionInLimitTime(Transaction transactionToProcess) {
-        return transactions.stream().anyMatch(transaction ->
-                transaction.getAmount() == transactionToProcess.getAmount() &&
-                        transaction.getMerchant().equals(transactionToProcess.getMerchant()));
+    private boolean repeatedTransactionInLimitTime(Transaction transactionToProcess, Deque<Transaction> filterHistory) {
+        return filterHistory.stream()
+                .anyMatch(transaction ->
+                        transaction.amount() == transactionToProcess.amount() &&
+                                transaction.merchant().equals(transactionToProcess.merchant()));
     }
 
-    private void cleanTransactions(Instant referenceTime) {
+    private Deque<Transaction> cleanTransactions(Instant referenceTime) {
         Instant limitTime = referenceTime.minusSeconds(Constants.LIMIT_TIME_SECONDS);
-        while (!transactions.isEmpty() && transactions.peekFirst().getTime().isBefore(limitTime)) {
-            transactions.pollFirst();
+        Deque<Transaction> newHistory = new ArrayDeque<>(this.transactions);
+        while (!newHistory.isEmpty() && newHistory.peekFirst().time().isBefore(limitTime)) {
+            newHistory.pollFirst();
         }
+        return newHistory;
     }
 }
