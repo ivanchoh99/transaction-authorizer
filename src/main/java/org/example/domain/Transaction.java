@@ -1,6 +1,6 @@
 package org.example.domain;
 
-import org.example.models.TransactionDTO;
+import org.example.model.TransactionDTO;
 
 import java.time.Instant;
 

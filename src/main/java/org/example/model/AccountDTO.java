@@ -1,6 +1,4 @@
-package org.example.models;
-
-import com.fasterxml.jackson.annotation.JsonRootName;
+package org.example.model;
 
 public record AccountDTO(
         boolean activeCard,

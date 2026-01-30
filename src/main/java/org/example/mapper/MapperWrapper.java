@@ -1,7 +1,7 @@
 package org.example.mapper;
 
-import org.example.models.AccountDTO;
-import org.example.models.TransactionDTO;
+import org.example.model.AccountDTO;
+import org.example.model.TransactionDTO;
 
 public class MapperWrapper {
     private AccountDTO account;
