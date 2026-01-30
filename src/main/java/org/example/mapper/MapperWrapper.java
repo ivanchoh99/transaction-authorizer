@@ -1,6 +1,5 @@
 package org.example.mapper;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.example.models.AccountDTO;
 import org.example.models.TransactionDTO;
 
