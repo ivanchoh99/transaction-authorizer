@@ -12,7 +12,7 @@ import java.util.List;
 
 public class Account {
 
-    private boolean activeCard;
+    private final boolean activeCard;
     private long availableLimit;
     private final Deque<Transaction> transactions = new ArrayDeque<>();
 
@@ -67,7 +67,7 @@ public class Account {
     }
 
     private void cleanTransactions(Instant referenceTime) {
-        Instant limitTime = referenceTime.minusSeconds(Constants.LIMIT_TRANSACTION_IN_TIME);
+        Instant limitTime = referenceTime.minusSeconds(Constants.LIMIT_TIME_SECONDS);
         while (!transactions.isEmpty() && transactions.peekFirst().getTime().isBefore(limitTime)) {
             transactions.pollFirst();
         }

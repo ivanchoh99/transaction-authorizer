@@ -14,7 +14,7 @@ import java.util.List;
 
 public class AccountService {
 
-    public Account account;
+    private Account account;
 
     public synchronized ResponseDTO initAccount(AccountDTO accountDTO) {
         List<String> violations = new ArrayList<>();
