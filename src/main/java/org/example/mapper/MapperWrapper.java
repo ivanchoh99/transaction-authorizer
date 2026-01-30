@@ -1,11 +1,11 @@
 package org.example.mapper;
 
+import org.example.domain.Transaction;
 import org.example.model.AccountDTO;
-import org.example.model.TransactionDTO;
 
 public class MapperWrapper {
     private AccountDTO account;
-    private TransactionDTO transaction;
+    private Transaction transaction;
 
     public AccountDTO getAccount() {
         return account;
@@ -15,11 +15,11 @@ public class MapperWrapper {
         this.account = account;
     }
 
-    public TransactionDTO getTransaction() {
+    public Transaction getTransaction() {
         return transaction;
     }
 
-    public void setTransaction(TransactionDTO transaction) {
+    public void setTransaction(Transaction transaction) {
         this.transaction = transaction;
     }
 }
