@@ -29,17 +29,17 @@ public class AccountService {
     }
 
     public RegisterResult processTransaction(Transaction transaction) {
-        List<String> violations = new ArrayList<>();
         while (true) {
             Account currentState = accountRef.get();
             if (currentState == null) {
+                List<String> violations = new ArrayList<>();
                 violations.add(Constants.ACCOUNT_NOT_INITIALIZED_MESSAGE);
                 return new RegisterResult(new NoInitAccount(), violations);
             }
 
             RegisterResult result = currentState.processTransaction(transaction);
             if (accountRef.compareAndSet(currentState, (Account) result.account())) {
-                return new RegisterResult(AccountMapper.toDTO(currentState), violations);
+                return new RegisterResult(AccountMapper.toDTO(currentState), result.violations());
             }
         }
     }
